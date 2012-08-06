@@ -26,6 +26,8 @@
 
 var html5js = {
 	
+	defaultLang: 'en',
+	
 	/**
 	 * Init jQuery fallbacks for all the HTML5 features that the browser doesn't support
 	 **/
@@ -75,17 +77,23 @@ var html5js = {
 	 * Add date picker into a input element
 	 **/
 	setDatepicker: function(element) {
-		var lang;
+		var lang = this.defaultLang;
 		if(navigator.language) {
 			lang = navigator.language;
 		}
 		else if(navigator.userLanguage) {
 			lang = navigator.userLanguage;
 		}
-		else {
-			lang = 'en';
+		var langParts = lang.split('-');
+		if($.datepicker.regional[lang]) {
+			$.datepicker.setDefaults($.datepicker.regional[lang]);
 		}
-		$.datepicker.setDefaults($.datepicker.regional[lang]);
+		else if($.datepicker.regional[langParts[0]]) {
+			$.datepicker.setDefaults($.datepicker.regional[langParts[0]]);
+		}
+		else {
+			$.datepicker.setDefaults($.datepicker.regional['']);
+		}
 		$.datepicker.setDefaults({dateFormat: 'yy-mm-dd'}); //Date format sent should be always Y-m-d. Format visible to user could be according to locale...
 		$(element).datepicker();
 		///FIXME if the input value has been changed by some event, also the jQuery-UI datepicker should be updated
