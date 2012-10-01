@@ -74,13 +74,9 @@ var html5js = {
 		
 		//Hidden elements
 		if(!('hidden' in document.createElement('span'))) {
-			alert('does not support');
 			$('[hidden]', scope).each(function() {
 				$(this).hide();
-			}
-		}
-		else {
-			alert('support ok');
+			});
 		}
 	},
 	
