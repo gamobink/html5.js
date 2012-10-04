@@ -82,8 +82,8 @@ var html5js = {
 		
 		//Hidden elements
 		if(!('hidden' in document.createElement('span'))) {
-			$('[hidden]', scope).each(function(index, input) {
-				$(index).hide();
+			$('[hidden]', scope).each(function(index, element) {
+				$(element).hide();
 			});
 		}
 	},
