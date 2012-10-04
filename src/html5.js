@@ -40,25 +40,24 @@ var html5js = {
 			
 			var formElement = this;
 			var testElement;
-			
 			//Autofocus
 			if(!('autofocus' in document.createElement('input'))) {
-				$('[autofocus]', formElement).each(function() {
-					main.setFocus(this);
+				$('[autofocus]', formElement).each(function(index, input) {
+					main.setFocus(input);
 				});
 			}
 			
 			//Placeholder
 			if(!('placeholder' in document.createElement('input'))) {
-				$('[placeholder]', formElement).each(function() {
-					main.setPlaceholder(this, $(this).attr('placeholder'));
+				$('[placeholder]', formElement).each(function(index, input) {
+					main.setPlaceholder(input, $(input).attr('placeholder'));
 				});
 			}
 			
 			//Required inputs
 			if(!('required' in document.createElement('input'))) {
-				$('[required]', formElement).each(function() {
-					main.setRequired(this);
+				$('[required]', formElement).each(function(index, input) {
+					main.setRequired(input);
 				});
 			}
 			
@@ -66,16 +65,25 @@ var html5js = {
 			testElement = document.createElement('input');
 			testElement.setAttribute('type', 'date');
 			if(testElement.type == 'text') {
-				$('input[type=date]', formElement).each(function() {
-					main.setDatepicker(this);
+				$('input[type=date]', formElement).each(function(index, input) {
+					main.setDatepicker(input);
+				});
+			}
+			
+			//Range input
+			testElement = document.createElement('input');
+			testElement.setAttribute('type', 'range');
+			if(testElement.type == 'text') {
+				$('input[type=range]', formElement).each(function(index, input) {
+					main.setRange(input);
 				});
 			}
 		});
 		
 		//Hidden elements
 		if(!('hidden' in document.createElement('span'))) {
-			$('[hidden]', scope).each(function() {
-				$(this).hide();
+			$('[hidden]', scope).each(function(index, input) {
+				$(index).hide();
 			});
 		}
 	},
@@ -83,7 +91,7 @@ var html5js = {
 	/**
 	 * Add date picker into a input element
 	 **/
-	setDatepicker: function(element) {
+	setDatepicker: function(input) {
 		var lang = this.defaultLang;
 		if(navigator.language) {
 			lang = navigator.language;
@@ -102,15 +110,15 @@ var html5js = {
 			$.datepicker.setDefaults($.datepicker.regional['']);
 		}
 		$.datepicker.setDefaults({dateFormat: 'yy-mm-dd'}); //Date format sent should be always Y-m-d. Format visible to user could be according to locale...
-		$(element).datepicker();
+		$(input).datepicker();
 		///FIXME if the input value has been changed by some event, also the jQuery-UI datepicker should be updated
 	},
 	
 	/**
 	 * Set focus on input element
 	 **/
-	setFocus: function(element) {
-		element.focus();
+	setFocus: function(input) {
+		input.focus();
 	},
 	
 	/**
@@ -118,27 +126,27 @@ var html5js = {
 	 * 
 	 * CSS: adds class html5jsPlaceholder for each element that has placeholder defined and class html5jsPlaceholderActive for elements that have placeholder visible
 	 **/
-	setPlaceholder: function(element, text) {
+	setPlaceholder: function(input, text) {
 		
-		var inputElement = $(element);
+		var input = $(input);
 		var className = 'html5jsPlaceholder';
 		var activeClassName = 'html5jsPlaceholderActive';
 		
-		inputElement.addClass(className);
+		input.addClass(className);
 		
 		//Input element has no default value, activating placeholder
-		if(inputElement.val() == '') {
-			inputElement.data('placeholderActive', true);
-			inputElement.addClass(activeClassName);
-			inputElement.val(text);
+		if(input.val() == '') {
+			input.data('placeholderActive', true);
+			input.addClass(activeClassName);
+			input.val(text);
 		}
 		//Input element has value, not activating the placeholder
 		else {
-			inputElement.data('placeholderActive', false);
+			input.data('placeholderActive', false);
 		}
 		
 		//Input element gets focus, clearing the placeholder
-		inputElement.focus(function() {
+		input.focus(function() {
 			if($(this).data('placeholderActive')) {
 				$(this).val('');
 				$(this).data('placeholderActive', false);
@@ -147,7 +155,7 @@ var html5js = {
 		});
 		
 		//Focus is lost from the input element
-		inputElement.blur(function() {
+		input.blur(function() {
 			//Input element value is empty, re-activating the placeholder
 			if($(this).val() == '') {
 				$(this).data('placeholderActive', true);
@@ -161,9 +169,9 @@ var html5js = {
 		});
 		
 		//Remove the placeholder text from input value when the form is submitted
-		inputElement.parents('form').submit(function() {
-			if(inputElement.data('placeholderActive')) {
-				inputElement.val('');
+		input.parents('form').submit(function() {
+			if(input.data('placeholderActive')) {
+				input.val('');
 			}
 		});
 	},
@@ -173,30 +181,56 @@ var html5js = {
 	 * 
 	 * CSS: adds class html5jsRequired for required inputs and class html5jsMissingInput for required elements that don't contain value
 	 **/
-	setRequired: function(element) {
+	setRequired: function(input) {
 		
-		var inputElement = $(element);
+		var input = $(input);
 		var className = 'html5jsRequired';
 		var missingClassName = 'html5jsMissingInput';
 		
-		inputElement.addClass(className);
+		input.addClass(className);
 		
 		//Focus is lost, check if element has required value
-		inputElement.blur(function() {
-			if((inputElement.val() == '') || inputElement.data('placeholderActive')) {
-				inputElement.addClass(missingClassName);
+		input.blur(function() {
+			if((input.val() == '') || input.data('placeholderActive')) {
+				input.addClass(missingClassName);
 			}
 			else {
-				inputElement.removeClass(missingClassName);
+				input.removeClass(missingClassName);
 			}
 		});
 		
 		//Form is submitted, prevent it if the element doesn't have a value
-		inputElement.parents('form').submit(function() {
-			if(inputElement.val() == '' || inputElement.data('placeholderActive')) {
-				inputElement.addClass(missingClassName);
+		input.parents('form').submit(function() {
+			if(input.val() == '' || input.data('placeholderActive')) {
+				input.addClass(missingClassName);
 				return false;
 			}
 		});
+	},
+	
+	/**
+	 * Use jQuery slider in place of range input
+	 * @link http://tjvantoll.com/2012/09/14/using-jquery-ui-slider-to-polyfill-html5-input-type-range/
+	 */
+	setRange: function(input) {
+		input = $(input);
+		
+		var options = {
+			min: parseInt(input.attr('min'), 10) || 0,
+			max: parseInt(input.attr('max'), 10) || 100,
+			value: parseInt(input.val(), 10) || 0,
+			step: parseInt(input.attr('step'), 10) || 1,
+			change: function(event, ui) {
+				input.val(ui.value);
+			}
+		};
+		if(input.attr('disabled')) {
+			options.disabled = true;
+		}
+		
+		var slider = $('<div />').slider(options);
+		
+		input.after(slider);
+		input.hide();
 	}
 }
