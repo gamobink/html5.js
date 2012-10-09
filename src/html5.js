@@ -34,51 +34,55 @@ var html5js = {
 	init: function(scope) {
 		
 		var main = this;
+		var testElement; //Temporary element used for testing browser support
 		
-		//HTML5 new form features
-		$('form', scope).each(function() {
-			
-			var formElement = this;
-			var testElement;
-			//Autofocus
-			if(!('autofocus' in document.createElement('input'))) {
-				$('[autofocus]', formElement).each(function(index, input) {
-					main.setFocus(input);
-				});
-			}
-			
-			//Placeholder
-			if(!('placeholder' in document.createElement('input'))) {
-				$('[placeholder]', formElement).each(function(index, input) {
-					main.setPlaceholder(input, $(input).attr('placeholder'));
-				});
-			}
-			
-			//Required inputs
-			if(!('required' in document.createElement('input'))) {
-				$('[required]', formElement).each(function(index, input) {
-					main.setRequired(input);
-				});
-			}
-			
-			//Date input
-			testElement = document.createElement('input');
-			testElement.setAttribute('type', 'date');
-			if(testElement.type == 'text') {
-				$('input[type=date]', formElement).each(function(index, input) {
-					main.setDatepicker(input);
-				});
-			}
-			
-			//Range input
-			testElement = document.createElement('input');
-			testElement.setAttribute('type', 'range');
-			if(testElement.type == 'text') {
-				$('input[type=range]', formElement).each(function(index, input) {
-					main.setRange(input);
-				});
-			}
-		});
+		//Autofocus
+		if(!('autofocus' in document.createElement('input'))) {
+			$('[autofocus]', scope).each(function(index, input) {
+				main.setFocus(input);
+			});
+		}
+		
+		//Placeholder
+		if(!('placeholder' in document.createElement('input'))) {
+			$('[placeholder]', scope).each(function(index, input) {
+				main.setPlaceholder(input, $(input).attr('placeholder'));
+			});
+		}
+		
+		//Required inputs
+		if(!('required' in document.createElement('input'))) {
+			$('[required]', scope).each(function(index, input) {
+				main.setRequired(input);
+			});
+		}
+		
+		//Number input
+		testElement = document.createElement('input');
+		testElement.setAttribute('type','number');
+		if(testElement.type == 'text') {
+			$('input[type=number]', scope).each(function(index, input) {
+				main.setSpinner(input);
+			});
+		}
+		
+		//Date input
+		testElement = document.createElement('input');
+		testElement.setAttribute('type', 'date');
+		if(testElement.type == 'text') {
+			$('input[type=date]', scope).each(function(index, input) {
+				main.setDatepicker(input);
+			});
+		}
+		
+		//Range input
+		testElement = document.createElement('input');
+		testElement.setAttribute('type', 'range');
+		if(testElement.type == 'text') {
+			$('input[type=range]', scope).each(function(index, input) {
+				main.setRange(input);
+			});
+		}
 		
 		//Hidden elements
 		if(!('hidden' in document.createElement('span'))) {
@@ -88,9 +92,28 @@ var html5js = {
 		}
 	},
 	
+	
+	/**
+	 * Add a spinner into a input element
+	 */
+	setSpinner: function(input) {
+		input = $(input);
+		var options = { };
+		if(input.attr('min')) {
+			options.min = parseInt(input.attr('min'), 10);
+		}
+		if(input.attr('max')) {
+			options.max = parseInt(input.attr('max'), 10);
+		}
+		if(input.attr('step')) {
+			options.step = parseInt(input.attr('step'), 10);
+		}
+		input.spinner(options);
+	},
+	
 	/**
 	 * Add date picker into a input element
-	 **/
+	 */
 	setDatepicker: function(input) {
 		var lang = this.defaultLang;
 		if(navigator.language) {
@@ -116,7 +139,7 @@ var html5js = {
 	
 	/**
 	 * Set focus on input element
-	 **/
+	 */
 	setFocus: function(input) {
 		input.focus();
 	},
@@ -125,7 +148,7 @@ var html5js = {
 	 * Add placeholder text into a input element
 	 * 
 	 * CSS: adds class html5jsPlaceholder for each element that has placeholder defined and class html5jsPlaceholderActive for elements that have placeholder visible
-	 **/
+	 */
 	setPlaceholder: function(input, text) {
 		
 		var input = $(input);
@@ -180,7 +203,7 @@ var html5js = {
 	 * Set input element required
 	 * 
 	 * CSS: adds class html5jsRequired for required inputs and class html5jsMissingInput for required elements that don't contain value
-	 **/
+	 */
 	setRequired: function(input) {
 		
 		var input = $(input);
