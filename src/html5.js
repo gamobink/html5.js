@@ -19,7 +19,10 @@
  * </script>
  * 
  * @author Tuomas Angervuori <tuomas.angervuori@gmail.com>
- * @requires http://jquery.com, http://jqueryui.com, https://github.com/aFarkas/html5shiv/
+ * @requires jQuery 1.8, jQuery-UI 1.9, html5shiv
+ * @link http://jquery.com
+ * @link http://jqueryui.com
+ * @link https://github.com/aFarkas/html5shiv/
  * @status Support for new HTML5 features is still very limited. Also testing has been very limited (IE7+, Chrome, Opera, Firefox...)
  **/
 
@@ -81,6 +84,13 @@ var html5js = {
 		if(testElement.type == 'text') {
 			$('input[type=range]', scope).each(function(index, input) {
 				main.setRange(input);
+			});
+		}
+		
+		//Datalists
+		if(!('list' in document.createElement('input'))) {
+			$('input[list]', scope).each(function(index, input) {
+				main.setAutocomplete(input);
 			});
 		}
 		
@@ -255,5 +265,18 @@ var html5js = {
 		
 		input.after(slider);
 		input.hide();
+	},
+	
+	/**
+	 * Use jQuery-UI autocomplete for datalists
+	 */
+	setAutocomplete: function(input) {
+		input = $(input);
+		var datalist = $('datalist#' + input.attr('list'));
+		var options = [];
+		$('option', datalist).each(function(index, element) {
+			options[index] = $(element).val();
+		});
+		input.autocomplete({source: options});
 	}
 }
