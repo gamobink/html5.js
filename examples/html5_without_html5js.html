@@ -18,7 +18,7 @@
 
 <h2>HTML5 form features</h2>
 
-<form action="." method="get">
+<form action="#" method="get">
 
 <fieldset>
 <legend>HTML5 form elements</legend>
@@ -159,6 +159,47 @@ Text field with data list
 <button type="submit">Test!</button>
 
 </form>
+
+<hr />
+
+<h2>Details & Summary</h2>
+
+<table border="1">
+
+<tr>
+<th>Details, default functionality</th>
+<td>
+<details>
+<summary>Summary text</summary>
+<p>Details for default functionality example</p>
+</details>
+</td>
+
+<tr>
+<th>Opened details</th>
+<td>
+<details open="open">   
+<summary>Summary text</summary>
+<p>Open details</p>
+</details>
+</td>
+</tr>
+
+<tr>
+<th>Nested details</th>
+<td>
+<details>
+<summary>Top level summary</summary>
+<p>Top level details</p>
+<details>
+<summary>Child element summary</summary>
+<p>Child element details</p>
+</details>
+</details>
+</td>
+</tr>
+
+</table>
 
 <hr />
 
