@@ -9,7 +9,7 @@
 <script type="text/javascript" src="http://code.jquery.com/ui/1.9.0/jquery-ui.min.js"></script>
 <!-- FIXME update all jQuery-UI sources to version 1.9 when possible -->
 <script type="text/javascript" src="http://jquery-ui.googlecode.com/svn/tags/latest/ui/minified/i18n/jquery-ui-i18n.min.js"></script>
-<link rel="stylesheet" type="text/css" href="http://jquery-ui.googlecode.com/svn/tags/latest/themes/base/minified/jquery-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.0/themes/base/jquery-ui.css" />
 <!--[if lt IE 9]>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6/html5shiv.min.js"></script>
 <![endif]-->
@@ -19,6 +19,7 @@ $(document).ready(function() {
 	html5js.init(document);
 });
 </script>
+
 
 </head>
 <body>
@@ -176,6 +177,54 @@ Text field with data list
 <button type="submit">Test!</button>
 
 </form>
+
+<hr />
+
+<h2>Details & Summary</h2>
+
+<table border="1">
+
+<tr>
+<th>Details, default functionality</th>
+<td>
+<details>
+<summary>Summary text</summary>
+<p>Details for default functionality example</p>
+</details>
+</td>
+
+<tr>
+<th>Opened details</th>
+<td>
+<details open="open">   
+<summary>Summary text</summary>
+<p>Open details</p>
+</details>
+</td>
+</tr>
+
+<tr>
+<th>Nested details</th>
+<td>
+<details>
+<summary>Top level summary</summary>
+<p>Top level details</p>
+<details>
+<summary>Child element summary</summary>
+<p>Child element details</p>
+</details>
+</details>
+</td>
+</tr>
+
+<tr>
+<th>Details without summary</th>
+<td>
+<details>Details tässä on joo</details>
+</td>
+</tr>
+
+</table>
 
 <hr />
 

@@ -94,6 +94,14 @@ var html5js = {
 			});
 		}
 		
+		//Details & summary elements
+		if(!('open' in document.createElement('details'))) {
+			var shiv = document.createElement('details');
+			$('details', scope).each(function(index, element) {
+				main.setDetails(element);
+			});
+		}
+		
 		//Hidden elements
 		if(!('hidden' in document.createElement('span'))) {
 			$('[hidden]', scope).each(function(index, element) {
@@ -107,18 +115,18 @@ var html5js = {
 	 * Add a spinner into a input element
 	 */
 	setSpinner: function(input) {
-		input = $(input);
+		var $input = $(input);
 		var options = { };
-		if(input.attr('min')) {
-			options.min = parseInt(input.attr('min'), 10);
+		if($input.attr('min')) {
+			options.min = parseInt($input.attr('min'), 10);
 		}
-		if(input.attr('max')) {
-			options.max = parseInt(input.attr('max'), 10);
+		if($input.attr('max')) {
+			options.max = parseInt($input.attr('max'), 10);
 		}
-		if(input.attr('step')) {
-			options.step = parseInt(input.attr('step'), 10);
+		if($input.attr('step')) {
+			options.step = parseInt($input.attr('step'), 10);
 		}
-		input.spinner(options);
+		$input.spinner(options);
 	},
 	
 	/**
@@ -161,50 +169,52 @@ var html5js = {
 	 */
 	setPlaceholder: function(input, text) {
 		
-		var input = $(input);
+		var $input = $(input);
 		var className = 'html5jsPlaceholder';
 		var activeClassName = 'html5jsPlaceholderActive';
 		
-		input.addClass(className);
+		$input.addClass(className);
 		
 		//Input element has no default value, activating placeholder
-		if(input.val() == '') {
-			input.data('placeholderActive', true);
-			input.addClass(activeClassName);
-			input.val(text);
+		if($input.val() == '') {
+			$input.data('placeholderActive', true);
+			$input.addClass(activeClassName);
+			$input.val(text);
 		}
 		//Input element has value, not activating the placeholder
 		else {
-			input.data('placeholderActive', false);
+			$input.data('placeholderActive', false);
 		}
 		
 		//Input element gets focus, clearing the placeholder
-		input.focus(function() {
-			if($(this).data('placeholderActive')) {
-				$(this).val('');
-				$(this).data('placeholderActive', false);
-				$(this).removeClass(activeClassName);
+		$input.focus(function() {
+			var $element = $(this);
+			if($element.data('placeholderActive')) {
+				$element.val('');
+				$element.data('placeholderActive', false);
+				$element.removeClass(activeClassName);
 			}
 		});
 		
 		//Focus is lost from the input element
-		input.blur(function() {
+		$input.blur(function() {
 			//Input element value is empty, re-activating the placeholder
-			if($(this).val() == '') {
-				$(this).data('placeholderActive', true);
-				$(this).addClass(activeClassName);
-				$(this).val(text);
+			var $element = $(this);
+			if($element.val() == '') {
+				$element.data('placeholderActive', true);
+				$element.addClass(activeClassName);
+				$element.val(text);
 			}
 			//Input element value is not empty
 			else {
-				$(this).data('placeholderActive', false);
+				$element.data('placeholderActive', false);
 			}
 		});
 		
 		//Remove the placeholder text from input value when the form is submitted
-		input.parents('form').submit(function() {
-			if(input.data('placeholderActive')) {
-				input.val('');
+		$input.parents('form').submit(function() {
+			if($input.data('placeholderActive')) {
+				$input.val('');
 			}
 		});
 	},
@@ -216,26 +226,26 @@ var html5js = {
 	 */
 	setRequired: function(input) {
 		
-		var input = $(input);
+		var $input = $(input);
 		var className = 'html5jsRequired';
 		var missingClassName = 'html5jsMissingInput';
 		
-		input.addClass(className);
+		$input.addClass(className);
 		
 		//Focus is lost, check if element has required value
-		input.blur(function() {
-			if((input.val() == '') || input.data('placeholderActive')) {
-				input.addClass(missingClassName);
+		$input.blur(function() {
+			if(($input.val() == '') || input.data('placeholderActive')) {
+				$input.addClass(missingClassName);
 			}
 			else {
-				input.removeClass(missingClassName);
+				$input.removeClass(missingClassName);
 			}
 		});
 		
 		//Form is submitted, prevent it if the element doesn't have a value
-		input.parents('form').submit(function() {
-			if(input.val() == '' || input.data('placeholderActive')) {
-				input.addClass(missingClassName);
+		$input.parents('form').submit(function() {
+			if($input.val() == '' || $input.data('placeholderActive')) {
+				$input.addClass(missingClassName);
 				return false;
 			}
 		});
@@ -246,37 +256,83 @@ var html5js = {
 	 * @link http://tjvantoll.com/2012/09/14/using-jquery-ui-slider-to-polyfill-html5-input-type-range/
 	 */
 	setRange: function(input) {
-		input = $(input);
+		var $input = $(input);
 		
 		var options = {
-			min: parseInt(input.attr('min'), 10) || 0,
-			max: parseInt(input.attr('max'), 10) || 100,
-			value: parseInt(input.val(), 10) || 0,
-			step: parseInt(input.attr('step'), 10) || 1,
+			min: parseInt($input.attr('min'), 10) || 0,
+			max: parseInt($input.attr('max'), 10) || 100,
+			value: parseInt($input.val(), 10) || 0,
+			step: parseInt($input.attr('step'), 10) || 1,
 			change: function(event, ui) {
-				input.val(ui.value);
+				$input.val(ui.value);
 			}
 		};
-		if(input.attr('disabled')) {
+		if($input.attr('disabled')) {
 			options.disabled = true;
 		}
 		
-		var slider = $('<div />').slider(options);
+		var $slider = $('<div />').slider(options);
 		
-		input.after(slider);
-		input.hide();
+		$input.after($slider);
+		$input.hide();
 	},
 	
 	/**
 	 * Use jQuery-UI autocomplete for datalists
 	 */
 	setAutocomplete: function(input) {
-		input = $(input);
-		var datalist = $('datalist#' + input.attr('list'));
+		var shiv = document.createElement('datalist');
+		var $input = $(input);
+		var $datalist = $('datalist#' + $input.attr('list'));
 		var options = [];
-		$('option', datalist).each(function(index, element) {
+		$('option', $datalist).each(function(index, element) {
 			options[index] = $(element).val();
 		});
-		input.autocomplete({source: options});
+		$input.autocomplete({source: options});
+	},
+	
+	
+	/**
+	 * Hide details element (unless set open) and add a toggle button for hiding/displaying the contents
+	 * @link http://akral.bitbucket.org/details-tag/ Similar js-script
+	 */
+	setDetails: function(details) {
+		var summaryText = 'Show contents';
+		var $details = $(details);
+		var shiv = document.createElement('details');
+		var shiv2 = document.createElement('summary');
+		
+		$('head').prepend('<style>'+
+			'details, summary {display:block}'+
+			'summary{cursor:pointer}'+
+			'details>summary::before{content:" ► "}'+
+			'details.open>summary::before{content:" ▼ "}'+
+			'details:not(.open)>:not(summary){display:none}'+
+			'</style>'
+                );
+		
+		//See if the summary element exists
+		if(!$details.children('summary').length) {
+			$details.prepend('<summary>' + summaryText + '</summary>');
+		}
+		
+		//Add event listeners to the summary elements
+		$details.children('summary').each(function(index, summary) {
+			$(summary).click(function() {
+				var parent = $(this).parent();
+				$(parent).toggleClass('open');
+			});
+		});
+		
+		//Check if details should be hidden by default
+		if($details.attr('open') == 'open') {
+			$details.addClass('open');
+		}
+		
+		//Wrap summary contents in spans
+		$details.contents(':not(summary)').each(function(index,element) {
+			var $element = $(element);
+			$element.wrap('<span />');
+		});
 	}
 }
