@@ -116,43 +116,56 @@ var html5js = {
 	 */
 	setSpinner: function(input) {
 		var $input = $(input);
-		var options = { };
-		if($input.attr('min')) {
-			options.min = parseInt($input.attr('min'), 10);
+		var className = 'html5jsSpinner';
+		
+		if(!$input.hasClass(className)) {
+			var options = { };
+			if($input.attr('min')) {
+				options.min = parseInt($input.attr('min'), 10);
+			}
+			if($input.attr('max')) {
+				options.max = parseInt($input.attr('max'), 10);
+			}
+			if($input.attr('step')) {
+				options.step = parseInt($input.attr('step'), 10);
+			}
+			$input.spinner(options);
+			
+			$input.addClass(className);
 		}
-		if($input.attr('max')) {
-			options.max = parseInt($input.attr('max'), 10);
-		}
-		if($input.attr('step')) {
-			options.step = parseInt($input.attr('step'), 10);
-		}
-		$input.spinner(options);
 	},
 	
 	/**
 	 * Add date picker into a input element
 	 */
 	setDatepicker: function(input) {
-		var lang = this.defaultLang;
-		if(navigator.language) {
-			lang = navigator.language;
+		var $input = $(input);
+		var className = 'html5jsDatepicker';
+		
+		if(!$input.hasClass(className)) {
+			var lang = this.defaultLang;
+			if(navigator.language) {
+				lang = navigator.language;
+			}
+			else if(navigator.userLanguage) {
+				lang = navigator.userLanguage;
+			}
+			var langParts = lang.split('-');
+			if($.datepicker.regional[lang]) {
+				$.datepicker.setDefaults($.datepicker.regional[lang]);
+			}
+			else if($.datepicker.regional[langParts[0]]) {
+				$.datepicker.setDefaults($.datepicker.regional[langParts[0]]);
+			}
+			else {
+				$.datepicker.setDefaults($.datepicker.regional['']);
+			}
+			$.datepicker.setDefaults({dateFormat: 'yy-mm-dd'}); //Date format sent should be always Y-m-d. Format visible to user could be according to locale...
+			$input.datepicker();
+			///FIXME if the input value has been changed by some event, also the jQuery-UI datepicker should be updated
+			
+			$input.addClass(className);
 		}
-		else if(navigator.userLanguage) {
-			lang = navigator.userLanguage;
-		}
-		var langParts = lang.split('-');
-		if($.datepicker.regional[lang]) {
-			$.datepicker.setDefaults($.datepicker.regional[lang]);
-		}
-		else if($.datepicker.regional[langParts[0]]) {
-			$.datepicker.setDefaults($.datepicker.regional[langParts[0]]);
-		}
-		else {
-			$.datepicker.setDefaults($.datepicker.regional['']);
-		}
-		$.datepicker.setDefaults({dateFormat: 'yy-mm-dd'}); //Date format sent should be always Y-m-d. Format visible to user could be according to locale...
-		$(input).datepicker();
-		///FIXME if the input value has been changed by some event, also the jQuery-UI datepicker should be updated
 	},
 	
 	/**
@@ -173,50 +186,52 @@ var html5js = {
 		var className = 'html5jsPlaceholder';
 		var activeClassName = 'html5jsPlaceholderActive';
 		
-		$input.addClass(className);
-		
-		//Input element has no default value, activating placeholder
-		if($input.val() == '') {
-			$input.data('placeholderActive', true);
-			$input.addClass(activeClassName);
-			$input.val(text);
-		}
-		//Input element has value, not activating the placeholder
-		else {
-			$input.data('placeholderActive', false);
-		}
-		
-		//Input element gets focus, clearing the placeholder
-		$input.focus(function() {
-			var $element = $(this);
-			if($element.data('placeholderActive')) {
-				$element.val('');
-				$element.data('placeholderActive', false);
-				$element.removeClass(activeClassName);
+		if(!$input.hasClass(className)) {
+			$input.addClass(className);
+			
+			//Input element has no default value, activating placeholder
+			if($input.val() == '') {
+				$input.data('placeholderActive', true);
+				$input.addClass(activeClassName);
+				$input.val(text);
 			}
-		});
-		
-		//Focus is lost from the input element
-		$input.blur(function() {
-			//Input element value is empty, re-activating the placeholder
-			var $element = $(this);
-			if($element.val() == '') {
-				$element.data('placeholderActive', true);
-				$element.addClass(activeClassName);
-				$element.val(text);
-			}
-			//Input element value is not empty
+			//Input element has value, not activating the placeholder
 			else {
-				$element.data('placeholderActive', false);
+				$input.data('placeholderActive', false);
 			}
-		});
-		
-		//Remove the placeholder text from input value when the form is submitted
-		$input.parents('form').submit(function() {
-			if($input.data('placeholderActive')) {
-				$input.val('');
-			}
-		});
+			
+			//Input element gets focus, clearing the placeholder
+			$input.focus(function() {
+				var $element = $(this);
+				if($element.data('placeholderActive')) {
+					$element.val('');
+					$element.data('placeholderActive', false);
+					$element.removeClass(activeClassName);
+				}
+			});
+			
+			//Focus is lost from the input element
+			$input.blur(function() {
+				//Input element value is empty, re-activating the placeholder
+				var $element = $(this);
+				if($element.val() == '') {
+					$element.data('placeholderActive', true);
+					$element.addClass(activeClassName);
+					$element.val(text);
+				}
+				//Input element value is not empty
+				else {
+					$element.data('placeholderActive', false);
+				}
+			});
+			
+			//Remove the placeholder text from input value when the form is submitted
+			$input.parents('form').submit(function() {
+				if($input.data('placeholderActive')) {
+					$input.val('');
+				}
+			});
+		}
 	},
 	
 	/**
@@ -257,24 +272,29 @@ var html5js = {
 	 */
 	setRange: function(input) {
 		var $input = $(input);
+		var className = 'html5jsRange';
 		
-		var options = {
-			min: parseInt($input.attr('min'), 10) || 0,
-			max: parseInt($input.attr('max'), 10) || 100,
-			value: parseInt($input.val(), 10) || 0,
-			step: parseInt($input.attr('step'), 10) || 1,
-			change: function(event, ui) {
-				$input.val(ui.value);
+		if(!$input.hasClass(className)) {
+			var options = {
+				min: parseInt($input.attr('min'), 10) || 0,
+				max: parseInt($input.attr('max'), 10) || 100,
+				value: parseInt($input.val(), 10) || 0,
+				step: parseInt($input.attr('step'), 10) || 1,
+				change: function(event, ui) {
+					$input.val(ui.value);
+				}
+			};
+			if($input.attr('disabled')) {
+				options.disabled = true;
 			}
-		};
-		if($input.attr('disabled')) {
-			options.disabled = true;
+			
+			var $slider = $('<div />').slider(options);
+			
+			$input.after($slider);
+			$input.hide();
+			
+			$input.addClass(className);
 		}
-		
-		var $slider = $('<div />').slider(options);
-		
-		$input.after($slider);
-		$input.hide();
 	},
 	
 	/**
@@ -283,12 +303,18 @@ var html5js = {
 	setAutocomplete: function(input) {
 		var shiv = document.createElement('datalist');
 		var $input = $(input);
-		var $datalist = $('datalist#' + $input.attr('list'));
-		var options = [];
-		$('option', $datalist).each(function(index, element) {
-			options[index] = $(element).val();
-		});
-		$input.autocomplete({source: options});
+		var className = 'html5jsAutocomplete';
+		
+		if(!$input.hasClass(className)) {
+			var $datalist = $('datalist#' + $input.attr('list'));
+			var options = [];
+			$('option', $datalist).each(function(index, element) {
+				options[index] = $(element).val();
+			});
+			$input.autocomplete({source: options});
+			
+			$input.addClass(className);
+		}
 	},
 	
 	
@@ -297,42 +323,46 @@ var html5js = {
 	 * @link http://akral.bitbucket.org/details-tag/ Similar js-script
 	 */
 	setDetails: function(details) {
-		var summaryText = 'Show contents';
-		var $details = $(details);
 		var shiv = document.createElement('details');
 		var shiv2 = document.createElement('summary');
+		var className = 'html5jsDetails';
+		var $details = $(details);
+		var defaultSummaryText = 'Show contents';
 		
-		$('head').prepend('<style>'+
-			'details, summary {display:block}'+
-			'summary{cursor:pointer}'+
-			'details>summary::before{content:" ► "}'+
-			'details.open>summary::before{content:" ▼ "}'+
-			'details:not(.open)>:not(summary){display:none}'+
-			'</style>'
-                );
-		
-		//See if the summary element exists
-		if(!$details.children('summary').length) {
-			$details.prepend('<summary>' + summaryText + '</summary>');
-		}
-		
-		//Add event listeners to the summary elements
-		$details.children('summary').each(function(index, summary) {
-			$(summary).click(function() {
-				var parent = $(this).parent();
-				$(parent).toggleClass('open');
+		if(!$details.hasClass(className)) {
+			$('head').prepend('<style type="text/css">'+
+				'details,summary{display:block}'+
+				'summary{cursor:pointer}'+
+				'details.closed>summary:before{content:" ► "}'+ //:before doesn't work on IE7
+				'details>summary:before{content:" ▼ "}'+ 
+				'details.closed .notSummary{display:none}'+ //:not doesn't work on IE7-8. details.closed>.notSummary doesn't work on IE7
+				'</style>'
+			);
+			
+			//See if the summary element exists
+			if(!$details.children('summary').length) {
+				$details.prepend('<summary>' + defaultSummaryText + '</summary>');
+			}
+			
+			//Add event listeners to the summary elements
+			$details.children('summary').each(function(index, summary) {
+				$(summary).click(function() {
+					var parent = $(this).parent();
+					$(parent).toggleClass('closed');
+				});
 			});
-		});
-		
-		//Check if details should be hidden by default
-		if($details.attr('open') == 'open') {
-			$details.addClass('open');
+			
+			//Check if details should be hidden by default
+			if($details.attr('open') != 'open') {
+				$details.addClass('closed');
+			}
+			
+			//Wrap summary contents in spans
+			$details.contents(':not(summary)').each(function(index,element) {
+				$(element).wrap('<span class="notSummary" />');
+			});
+			
+			$details.addClass(className);
 		}
-		
-		//Wrap summary contents in spans
-		$details.contents(':not(summary)').each(function(index,element) {
-			var $element = $(element);
-			$element.wrap('<span />');
-		});
 	}
 }
